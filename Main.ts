@@ -268,7 +268,9 @@ function parseHeaderBlock(block: string): {
 
 		if (tag === "arg") {
 			if (!currentCommand) {
-				warnings.push(`@arg found outside @command at line ${i + 1}`);
+				warnings.push(
+					`${i + 1}) @arg found outside @command: @${tag} ${value}`,
+				);
 				currentCommand = { command: "__unknown__", args: [], meta: {} };
 				result.commands.push(currentCommand);
 			}
@@ -287,6 +289,7 @@ function parseHeaderBlock(block: string): {
 				currentParam.options ??= [];
 				currentParam.options.push(currentOption);
 			}
+			continue;
 		}
 
 		let target = ParsingCategory.None;
@@ -298,17 +301,27 @@ function parseHeaderBlock(block: string): {
 			target = ParsingCategory.Command;
 		}
 
-		const success = parseTag(
-			tag,
-			value,
-			target,
-			currentParam,
-			currentCommand,
-			currentOption,
-		);
+		let success;
+		while (true) {
+			success = parseTag(
+				tag,
+				value,
+				target,
+				currentParam,
+				currentCommand,
+				currentOption,
+			);
+
+			// If unsuccessful within @option, try assuming within an parameter instead.
+			if (!success && target === ParsingCategory.Option) {
+				target = ParsingCategory.PluginOrCommandArgument;
+			} else {
+				break;
+			}
+		}
 
 		if (!success) {
-			warnings.push("Unexpected @" + tag);
+			warnings.push(`${i + 1}) Unexpected @${tag} ${value}`);
 			if (
 				target === ParsingCategory.PluginOrCommandArgument &&
 				currentParam
@@ -525,8 +538,10 @@ function parseStructBlock(
 	const lines = body.split(/\r?\n/).map(normalizeLine);
 
 	let currentParam: PluginParam | null = null;
-	for (const raw of lines) {
-		const parsed = parseTagLine(raw);
+	let currentOption: { option: string; value: string } | null = null;
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i];
+		const parsed = parseTagLine(line);
 		if (!parsed) continue;
 		const tag = parsed.tag;
 		const value = parsed.value;
@@ -538,19 +553,44 @@ function parseStructBlock(
 				type: { type: PluginParamInnerType.String },
 			};
 			struct.params.push(currentParam);
+			currentOption = null;
+			continue;
 		}
 
-		const success = parseTag(
-			tag,
-			value,
-			ParsingCategory.PluginOrCommandArgument,
-			currentParam,
-			null,
-			null,
-		);
+		if (tag === "option" && currentParam) {
+			currentOption = { option: value, value: "" };
+			if (currentParam) {
+				currentParam.options ??= [];
+				currentParam.options.push(currentOption);
+			}
+			continue;
+		}
+
+		let target = currentOption !== null
+			? ParsingCategory.Option
+			: ParsingCategory.PluginOrCommandArgument;
+
+		let success;
+		while (true) {
+			success = parseTag(
+				tag,
+				value,
+				target,
+				currentParam,
+				null,
+				currentOption,
+			);
+
+			// If unsuccessful within @option, try assuming within an parameter instead.
+			if (!success && target === ParsingCategory.Option) {
+				target = ParsingCategory.PluginOrCommandArgument;
+			} else {
+				break;
+			}
+		}
 
 		if (!success) {
-			warnings.push("Unexpected @" + tag);
+			warnings.push(`${i + 1}) Unexpected @${tag} ${value}`);
 			if (currentParam) {
 				currentParam.meta ??= {};
 				currentParam.meta[tag] = value;
