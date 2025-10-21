@@ -225,6 +225,15 @@ function parseHeaderBlock(block: string): {
 
 		if (tag === "plugindesc") {
 			result.plugindesc = value;
+
+			// @plugindesc can span two lines, so check if the next line has a tag.
+			// If not, add it to @plugindesc.
+			const nextLine = lines.at(i + 1);
+			if (nextLine && parseTagLine(nextLine) === null) {
+				result.plugindesc += `\n${nextLine}`;
+				i++;
+			}
+
 			currentParam = null;
 			currentCommand = null;
 			continue;

@@ -73,7 +73,8 @@ Deno.test("basic parse mz", function () {
 	const content = `
 /*:
  * @target mz
- * @plugindesc Bye
+ * @plugindesc Hi
+ * How are ya?
  * @author SomeRanDev
  * @help
  * This is a help section.
@@ -88,7 +89,7 @@ Deno.test("basic parse mz", function () {
 		data: {
 			default: {
 				target: PluginTarget.MZ,
-				plugindesc: "Bye",
+				plugindesc: "Hi\nHow are ya?",
 				author: "SomeRanDev",
 				help: "This is a help section.\n",
 				params: [],
