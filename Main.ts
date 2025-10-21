@@ -103,7 +103,9 @@ export function parseHeaders(
 /**
  * Returns the result of `parseHeaders` from the contents of a file.
  */
-export async function parseHeadersFromFile(file: string) {
+export async function parseHeadersFromFile(
+	file: string,
+): Promise<ParseHeadersResult | null> {
 	const text = await Deno.readTextFile(file);
 	return parseHeaders(text);
 }
