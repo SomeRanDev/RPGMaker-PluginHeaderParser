@@ -6,7 +6,7 @@
 	"tasks": {
 		// Runs the program expected an argument for the input plugin file.
 		"start": "deno run --allow-read --allow-write Main.ts",
-		"test": "deno test tests/*",
+		"test": "deno test tests/*"
 	},
 	"fmt": {
 		"useTabs": true,
@@ -14,10 +14,11 @@
 		"indentWidth": 4,
 		"semiColons": true,
 		"singleQuote": false,
+		"exclude": ["README.md"]
 	},
 	"lint": {
 		"rules": {
-			"exclude": ["no-import-prefix"],
-		},
-	},
+			"exclude": ["no-import-prefix"]
+		}
+	}
 }
