@@ -200,6 +200,14 @@ function parseHeaderBlock(block: string): {
 	let currentOption: { option: string; value: string } | null = null;
 	let parsingHelp = false;
 
+	const BASIC_TOP_LEVEL_TAGS = [
+		"base",
+		"orderBefore",
+		"orderAfter",
+		"author",
+		"url",
+	];
+
 	for (let i = 0; i < lines.length; i++) {
 		const raw = lines[i];
 
@@ -227,18 +235,26 @@ function parseHeaderBlock(block: string): {
 				: PluginTarget.MV;
 			continue;
 		}
-		if (tag === "author") {
-			result.author = value;
-			continue;
-		}
-		if (tag === "url") {
-			result.url = value;
-			continue;
-		}
 		if (tag === "help") {
 			parsingHelp = true;
 			currentParam = null;
 			currentCommand = null;
+			continue;
+		}
+
+		let foundTopLevelTag = false;
+		for (const topLevelTag of BASIC_TOP_LEVEL_TAGS) {
+			if (tag === topLevelTag) {
+				// @ts-ignore `topLevelTag` is guarenteed to be a property name of `PluginData`.
+				result[topLevelTag] = value;
+				currentParam = null;
+				currentCommand = null;
+
+				foundTopLevelTag = true;
+				continue;
+			}
+		}
+		if (foundTopLevelTag) {
 			continue;
 		}
 
@@ -437,7 +453,13 @@ function parseTag(
 			break;
 		}
 		case "text": {
-			if (target === ParsingCategory.Command && currentCommand) {
+			if (
+				target === ParsingCategory.PluginOrCommandArgument &&
+				currentParam
+			) {
+				currentParam.text = value;
+				success = true;
+			} else if (target === ParsingCategory.Command && currentCommand) {
 				currentCommand.text = value;
 				success = true;
 			}

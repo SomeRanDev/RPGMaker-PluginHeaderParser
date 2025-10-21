@@ -103,6 +103,7 @@ export function stringToParamType(name: string): PluginParamType {
 export interface PluginParam {
 	name: string;
 	type: PluginParamType;
+	text?: string;
 	default?: string;
 	desc?: string;
 	options?: { option: string; value: string }[];
