@@ -56,12 +56,14 @@ export interface PluginData {
 /**
  * The result provided by `parseHeaders` and `parseHeadersFromFile`.
  *
- * `data` is the parsed `PluginData`.
- * `warnings` is a list of messages listing issues with the parse.
+ * @param data is the parsed `PluginData`.
+ * @param warnings is a list of messages listing issues with the parse.
+ * @param remainingContent is the remaining content/code once the parsed comments are removed.
  */
 export interface ParseHeadersResult {
 	data: Record<string, PluginData>;
 	warnings: string[];
+	remainingContent: string;
 }
 
 /**
@@ -71,10 +73,12 @@ export function parseHeaders(
 	code: string,
 ): ParseHeadersResult | null {
 	// Parse header
-	const headerBlocks = extractBlocks(code);
-	if (!headerBlocks) {
+	const extractBlocksResult = extractBlocks(code);
+	if (!extractBlocksResult) {
 		return null;
 	}
+
+	const { data: headerBlocks, remainingContent } = extractBlocksResult;
 
 	const data: Record<string, PluginData> = {};
 	const totalWarnings: string[] = [];
@@ -89,7 +93,12 @@ export function parseHeaders(
 	}
 
 	// Parse struct blocks
-	const structBlocks = extractStructBlocks(code);
+	const {
+		data: structBlocks,
+		remainingContent: remainingContentAfterStructBlocks,
+	} = extractStructBlocks(
+		remainingContent,
+	);
 	for (const s of structBlocks) {
 		const struct = parseStructBlock(s.name, s.body, totalWarnings);
 		if (data[s.language]) {
@@ -97,7 +106,11 @@ export function parseHeaders(
 		}
 	}
 
-	return { data, warnings: totalWarnings };
+	return {
+		data,
+		warnings: totalWarnings,
+		remainingContent: remainingContentAfterStructBlocks,
+	};
 }
 
 /**
@@ -131,14 +144,26 @@ function parseTagLine(line: string): { tag: string; value: string } | null {
  */
 function extractBlocks(
 	text: string,
-): { language: string; content: string }[] | null {
+):
+	| {
+		data: { language: string; content: string }[];
+		remainingContent: string;
+	}
+	| null {
 	const result: { language: string; content: string }[] = [];
-	const re = /\/\*:(\w+)?\s*([\s\S]*?)\*\//g;
+	let remainingContent = text;
+	const re = /\/\*:(\w+)?\s*([\s\S]*?)\*\//gd;
 	let m: RegExpExecArray | null = null;
-	while ((m = re.exec(text)) !== null) {
+	while ((m = re.exec(remainingContent)) !== null) {
+		const matchedIndices = m.indices?.at(0);
+		if (matchedIndices) {
+			remainingContent =
+				remainingContent.substring(0, matchedIndices[0]) +
+				remainingContent.substring(matchedIndices[1]);
+		}
 		result.push({ language: m.at(1) ?? "default", content: m.at(2) ?? "" });
 	}
-	return result;
+	return { data: result, remainingContent };
 }
 
 /**
@@ -146,20 +171,32 @@ function extractBlocks(
  */
 function extractStructBlocks(
 	text: string,
-): { name: string; language: string; body: string }[] {
+): {
+	data: { name: string; language: string; body: string }[];
+	remainingContent: string;
+} {
 	const result: { name: string; language: string; body: string }[] = [];
-	const re = /\/\*~struct~([A-Za-z0-9_]+):(\w+)?([\s\S]*?)\*\//g;
+	let remainingContent = text;
+	const re = /\/\*~struct~([A-Za-z0-9_]+):(\w+)?([\s\S]*?)\*\//gd;
 	let m: RegExpExecArray | null = null;
 	while ((m = re.exec(text)) !== null) {
 		const name = m.at(1) ?? null;
 		if (name === null) continue;
+
+		const matchedIndices = m.indices?.at(0);
+		if (matchedIndices) {
+			remainingContent =
+				remainingContent.substring(0, matchedIndices[0]) +
+				remainingContent.substring(matchedIndices[1]);
+		}
+
 		result.push({
 			name,
 			language: m.at(2) ?? "default",
 			body: m.at(3) ?? "",
 		});
 	}
-	return result;
+	return { data: result, remainingContent };
 }
 
 /**

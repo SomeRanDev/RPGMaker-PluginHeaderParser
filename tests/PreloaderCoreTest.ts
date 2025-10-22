@@ -1327,5 +1327,7 @@ SRD.PreloaderCore = SRD.PreloaderCore || {};
 			},
 		},
 		"warnings": [],
+		remainingContent:
+			"\n\n\n\nvar SRD = SRD || {};\nSRD.PreloaderCore = SRD.PreloaderCore || {};\n\n",
 	});
 });

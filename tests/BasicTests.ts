@@ -32,6 +32,7 @@ Deno.test("basic parse", function () {
 			},
 		},
 		warnings: [],
+		remainingContent: '\n\n\n(function() {\n\talert("Hello!");\n})();\n',
 	});
 });
 
@@ -66,6 +67,7 @@ Deno.test("basic parse below code", function () {
 			},
 		},
 		warnings: [],
+		remainingContent: '\n(function() {\n\talert("Hello!");\n})();\n\n\n',
 	});
 });
 
@@ -100,5 +102,6 @@ Deno.test("basic parse mz", function () {
 			},
 		},
 		warnings: [],
+		remainingContent: '\n\n\n(function() {\n\talert("Hello!");\n})();\n',
 	});
 });

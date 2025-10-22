@@ -236,5 +236,6 @@ Deno.test("hud maker", function () {
 			},
 		},
 		"warnings": [],
+		remainingContent: "\n\n(function() {\n})();\n\n",
 	});
 });

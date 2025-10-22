@@ -183,6 +183,8 @@ Deno.test("hud maker ultra", function () {
 			},
 		},
 		"warnings": [],
+		remainingContent:
+			"\n\nvar SRD = SRD || {};\nSRD.HUDMakerUltra = SRD.HUDMakerUltra || {};",
 	});
 });
 
