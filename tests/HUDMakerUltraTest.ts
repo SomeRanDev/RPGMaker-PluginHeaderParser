@@ -10,29 +10,26 @@ Deno.test("hud maker ultra", function () {
 				"plugindesc":
 					"Allows you to create and use HUDs for the map and battles.\nRequires the HUD Maker Ultra editor.",
 				"author": "SRDude",
-				"base": "SRD_UltraBase",
-				"orderAfter": "SRD_UltraBase",
-				"orderBefore": "SRD_HUDMakerUltraPro",
 				"help":
 					"============================================================================\nHUD Maker Ultra\nVersion 1.1.5\nSRDude\n============================================================================\n\nThis plugin allows developers to create their own map and battle HUD.\n\nThis plugin requires the HUD Maker Ultra software.\nYou can download it for free here:\nhttp://sumrndm.site/hud-maker-ultra\n\n============================================================================\nEnd of Help File\n============================================================================\n\nWelcome to the bottom of the Help file. Thanks for reading!\n\nhttps://www.youtube.com/SumRndmDde\nhttps://www.twitter.com/SumRndmDde\nhttp://sumrndm.site\n\nUntil next time,\n~ SRDude\n",
 				"params": [{
 					"name": "Auto-Reload HUD Data",
 					"meta": {},
-					"type": { "type": 4 },
+					"type": { "type": 4, "arrayDepth": 0 },
 					"desc":
 						"If ON, everytime the game window receives focus, the editor data will be reloaded. Only works during play-tests.",
 					"default": "false",
 				}, {
 					"name": "Enable Screenshots",
 					"meta": {},
-					"type": { "type": 4 },
+					"type": { "type": 4, "arrayDepth": 0 },
 					"desc":
 						'If ON, pressing "CTRL + S" will take a screen-shot of the game without the HUD.',
 					"default": "false",
 				}, {
 					"name": "Hide Battle Status Window",
 					"meta": {},
-					"type": { "type": 4 },
+					"type": { "type": 4, "arrayDepth": 0 },
 					"desc":
 						"If ON, the party's battle status window will be made invisible.",
 					"on": "Hide",
@@ -41,7 +38,7 @@ Deno.test("hud maker ultra", function () {
 				} as BooleanPluginParam, {
 					"name": "Hide Battle Selection Window",
 					"meta": {},
-					"type": { "type": 4 },
+					"type": { "type": 4, "arrayDepth": 0 },
 					"desc":
 						"If ON, the enemy/party selection window will be made invisible.",
 					"on": "Hide",
@@ -50,33 +47,33 @@ Deno.test("hud maker ultra", function () {
 				} as BooleanPluginParam, {
 					"name": "Fade During Events",
 					"meta": {},
-					"type": { "type": 4 },
+					"type": { "type": 4, "arrayDepth": 0 },
 					"desc": "If ON, the HUD will fade out during events.",
 					"default": "true",
 				}, {
 					"name": "Event Fade Opacity",
 					"meta": {},
-					"type": { "type": 3 },
+					"type": { "type": 3, "arrayDepth": 0 },
 					"desc": "The opacity of the HUD during event processing.",
 					"default": "125",
 				}, {
 					"name": "Fade Duration",
 					"meta": {},
-					"type": { "type": 3 },
+					"type": { "type": 3, "arrayDepth": 0 },
 					"desc":
 						"The duration of the fade animation upon changing between visibility modes.",
 					"default": "10",
 				}, {
 					"name": "Map Visibility Code",
 					"meta": {},
-					"type": { "type": 1 },
+					"type": { "type": 1, "arrayDepth": 0 },
 					"desc":
 						"Code that dictates the HUD's visibility on the map.",
 					"default": "return true;",
 				}, {
 					"name": "Battle Visibility Code",
 					"meta": {},
-					"type": { "type": 1 },
+					"type": { "type": 1, "arrayDepth": 0 },
 					"desc":
 						"Code that dictates the HUD's visibility in battle.",
 					"default": "return true;",
@@ -84,21 +81,21 @@ Deno.test("hud maker ultra", function () {
 				"flatParams": [{
 					"name": "Auto-Reload HUD Data",
 					"meta": {},
-					"type": { "type": 4 },
+					"type": { "type": 4, "arrayDepth": 0 },
 					"desc":
 						"If ON, everytime the game window receives focus, the editor data will be reloaded. Only works during play-tests.",
 					"default": "false",
 				}, {
 					"name": "Enable Screenshots",
 					"meta": {},
-					"type": { "type": 4 },
+					"type": { "type": 4, "arrayDepth": 0 },
 					"desc":
 						'If ON, pressing "CTRL + S" will take a screen-shot of the game without the HUD.',
 					"default": "false",
 				}, {
 					"name": "Hide Battle Status Window",
 					"meta": {},
-					"type": { "type": 4 },
+					"type": { "type": 4, "arrayDepth": 0 },
 					"desc":
 						"If ON, the party's battle status window will be made invisible.",
 					"on": "Hide",
@@ -107,7 +104,7 @@ Deno.test("hud maker ultra", function () {
 				} as BooleanPluginParam, {
 					"name": "Hide Battle Selection Window",
 					"meta": {},
-					"type": { "type": 4 },
+					"type": { "type": 4, "arrayDepth": 0 },
 					"desc":
 						"If ON, the enemy/party selection window will be made invisible.",
 					"on": "Hide",
@@ -116,33 +113,33 @@ Deno.test("hud maker ultra", function () {
 				} as BooleanPluginParam, {
 					"name": "Fade During Events",
 					"meta": {},
-					"type": { "type": 4 },
+					"type": { "type": 4, "arrayDepth": 0 },
 					"desc": "If ON, the HUD will fade out during events.",
 					"default": "true",
 				}, {
 					"name": "Event Fade Opacity",
 					"meta": {},
-					"type": { "type": 3 },
+					"type": { "type": 3, "arrayDepth": 0 },
 					"desc": "The opacity of the HUD during event processing.",
 					"default": "125",
 				}, {
 					"name": "Fade Duration",
 					"meta": {},
-					"type": { "type": 3 },
+					"type": { "type": 3, "arrayDepth": 0 },
 					"desc":
 						"The duration of the fade animation upon changing between visibility modes.",
 					"default": "10",
 				}, {
 					"name": "Map Visibility Code",
 					"meta": {},
-					"type": { "type": 1 },
+					"type": { "type": 1, "arrayDepth": 0 },
 					"desc":
 						"Code that dictates the HUD's visibility on the map.",
 					"default": "return true;",
 				}, {
 					"name": "Battle Visibility Code",
 					"meta": {},
-					"type": { "type": 1 },
+					"type": { "type": 1, "arrayDepth": 0 },
 					"desc":
 						"Code that dictates the HUD's visibility in battle.",
 					"default": "return true;",
@@ -152,7 +149,7 @@ Deno.test("hud maker ultra", function () {
 					"args": [{
 						"name": "Visible?",
 						"meta": {},
-						"type": { "type": 4 },
+						"type": { "type": 4, "arrayDepth": 0 },
 						"desc":
 							"Whether the HUD is set to visible or invisible.",
 						"on": "Visible",
@@ -167,7 +164,7 @@ Deno.test("hud maker ultra", function () {
 					"args": [{
 						"name": "Active?",
 						"meta": {},
-						"type": { "type": 4 },
+						"type": { "type": 4, "arrayDepth": 0 },
 						"desc": "Whether the HUD is active.",
 						"on": "Active",
 						"off": "Inactive",
@@ -180,10 +177,13 @@ Deno.test("hud maker ultra", function () {
 				"structs": [],
 				"meta": {},
 				"url": "http://sumrndm.site/hud-maker-ultra",
+				"base": "SRD_UltraBase",
+				"orderAfter": "SRD_UltraBase",
+				"orderBefore": "SRD_HUDMakerUltraPro",
 			},
 		},
 		"warnings": [],
-		remainingContent:
+		"remainingContent":
 			"\n\nvar SRD = SRD || {};\nSRD.HUDMakerUltra = SRD.HUDMakerUltra || {};",
 	});
 });
