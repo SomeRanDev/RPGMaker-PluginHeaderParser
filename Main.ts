@@ -177,9 +177,12 @@ function extractStructBlocks(
 } {
 	const result: { name: string; language: string; body: string }[] = [];
 	let remainingContent = text;
-	const re = /\/\*~struct~([A-Za-z0-9_]+):(\w+)?([\s\S]*?)\*\//gd;
 	let m: RegExpExecArray | null = null;
-	while ((m = re.exec(text)) !== null) {
+	while (
+		(m = /\/\*~struct~([A-Za-z0-9_]+):(\w+)?([\s\S]*?)\*\//gd.exec(
+			remainingContent,
+		)) !== null
+	) {
 		const name = m.at(1) ?? null;
 		if (name === null) continue;
 
@@ -308,7 +311,7 @@ function parseHeaderBlock(block: string): {
 			currentParam = {
 				name: value,
 				meta: {},
-				type: { type: PluginParamInnerType.String },
+				type: { type: PluginParamInnerType.String, arrayDepth: 0 },
 			};
 			result.flatParams.push(currentParam);
 			result.params.push(currentParam);
@@ -339,7 +342,7 @@ function parseHeaderBlock(block: string): {
 			currentParam = {
 				name: value,
 				meta: {},
-				type: { type: PluginParamInnerType.String },
+				type: { type: PluginParamInnerType.String, arrayDepth: 0 },
 			};
 			currentCommand.args.push(currentParam);
 			continue;
@@ -618,7 +621,7 @@ function parseStructBlock(
 			currentParam = {
 				name: value,
 				meta: {},
-				type: { type: PluginParamInnerType.String },
+				type: { type: PluginParamInnerType.String, arrayDepth: 0 },
 			};
 			struct.params.push(currentParam);
 			currentOption = null;

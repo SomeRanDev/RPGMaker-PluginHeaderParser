@@ -20,17 +20,12 @@ export enum PluginParamInnerType {
 	CommonEvent,
 	Switch,
 	Variable,
-	Array,
 	Struct,
 }
 
 export interface PluginParamType {
 	type: PluginParamInnerType;
-}
-
-export interface PluginParamArrayType extends PluginParamType {
-	type: PluginParamInnerType.Array;
-	subtype: PluginParamType;
+	arrayDepth: number;
 }
 
 export interface PluginParamStructType extends PluginParamType {
@@ -41,63 +36,65 @@ export interface PluginParamStructType extends PluginParamType {
 export function stringToParamType(name: string): PluginParamType {
 	name = name.trim();
 	if (name.endsWith("[]")) {
-		const type = stringToParamType(name.substring(0, name.length - 3));
-		return {
-			type: PluginParamInnerType.Array,
-			subtype: type,
-		} as PluginParamArrayType;
+		const type = stringToParamType(name.substring(0, name.length - 2));
+		type.arrayDepth++;
+		return type;
 	} else if (name.startsWith("struct<")) {
 		return {
 			type: PluginParamInnerType.Struct,
-			structName: name.substring("struct<".length, name.length - 2),
+			structName: name.substring("struct<".length, name.length - 1),
 		} as PluginParamStructType;
+	}
+
+	function makeType(inner: PluginParamInnerType) {
+		return { type: inner, arrayDepth: 0 };
 	}
 
 	switch (name.toLowerCase()) {
 		case "string":
-			return { type: PluginParamInnerType.String };
+			return makeType(PluginParamInnerType.String);
 		case "multiline_string":
-			return { type: PluginParamInnerType.MultilineString };
+			return makeType(PluginParamInnerType.MultilineString);
 		case "file":
-			return { type: PluginParamInnerType.File };
+			return makeType(PluginParamInnerType.File);
 		case "number":
-			return { type: PluginParamInnerType.Number };
+			return makeType(PluginParamInnerType.Number);
 		case "boolean":
-			return { type: PluginParamInnerType.Boolean };
+			return makeType(PluginParamInnerType.Boolean);
 		case "select":
-			return { type: PluginParamInnerType.Select };
+			return makeType(PluginParamInnerType.Select);
 		case "combo":
-			return { type: PluginParamInnerType.Combo };
+			return makeType(PluginParamInnerType.Combo);
 		case "actor":
-			return { type: PluginParamInnerType.Actor };
+			return makeType(PluginParamInnerType.Actor);
 		case "class":
-			return { type: PluginParamInnerType.Class };
+			return makeType(PluginParamInnerType.Class);
 		case "skill":
-			return { type: PluginParamInnerType.Skill };
+			return makeType(PluginParamInnerType.Skill);
 		case "item":
-			return { type: PluginParamInnerType.Item };
+			return makeType(PluginParamInnerType.Item);
 		case "weapon":
-			return { type: PluginParamInnerType.Weapon };
+			return makeType(PluginParamInnerType.Weapon);
 		case "armor":
-			return { type: PluginParamInnerType.Armor };
+			return makeType(PluginParamInnerType.Armor);
 		case "enemy":
-			return { type: PluginParamInnerType.Enemy };
+			return makeType(PluginParamInnerType.Enemy);
 		case "troop":
-			return { type: PluginParamInnerType.Troop };
+			return makeType(PluginParamInnerType.Troop);
 		case "state":
-			return { type: PluginParamInnerType.State };
+			return makeType(PluginParamInnerType.State);
 		case "animation":
-			return { type: PluginParamInnerType.Animation };
+			return makeType(PluginParamInnerType.Animation);
 		case "tileset":
-			return { type: PluginParamInnerType.Tileset };
+			return makeType(PluginParamInnerType.Tileset);
 		case "common_event":
-			return { type: PluginParamInnerType.CommonEvent };
+			return makeType(PluginParamInnerType.CommonEvent);
 		case "switch":
-			return { type: PluginParamInnerType.Switch };
+			return makeType(PluginParamInnerType.Switch);
 		case "variable":
-			return { type: PluginParamInnerType.Variable };
+			return makeType(PluginParamInnerType.Variable);
 	}
-	return { type: PluginParamInnerType.String };
+	return makeType(PluginParamInnerType.String);
 }
 
 export interface PluginParam {
@@ -113,15 +110,15 @@ export interface PluginParam {
 }
 
 export interface StringPluginParam extends PluginParam {
-	type: { type: PluginParamInnerType.String };
+	type: { type: PluginParamInnerType.String; arrayDepth: number };
 }
 
 export interface MultilineStringPluginParam extends PluginParam {
-	type: { type: PluginParamInnerType.MultilineString };
+	type: { type: PluginParamInnerType.MultilineString; arrayDepth: number };
 }
 
 export interface FilePluginParam extends PluginParam {
-	type: { type: PluginParamInnerType.File };
+	type: { type: PluginParamInnerType.File; arrayDepth: number };
 	dir: string;
 }
 
@@ -132,7 +129,7 @@ export function isFilePluginParam(
 }
 
 export interface NumberPluginParam extends PluginParam {
-	type: { type: PluginParamInnerType.Number };
+	type: { type: PluginParamInnerType.Number; arrayDepth: number };
 	min: number;
 	max: number;
 	decimals: number;
@@ -145,7 +142,7 @@ export function isNumberPluginParam(
 }
 
 export interface BooleanPluginParam extends PluginParam {
-	type: { type: PluginParamInnerType.Boolean };
+	type: { type: PluginParamInnerType.Boolean; arrayDepth: number };
 	on: string;
 	off: string;
 }
@@ -157,71 +154,67 @@ export function isBooleanPluginParam(
 }
 
 export interface SelectPluginParam extends PluginParam {
-	type: { type: PluginParamInnerType.Select };
+	type: { type: PluginParamInnerType.Select; arrayDepth: number };
 }
 
 export interface ComboPluginParam extends PluginParam {
-	type: { type: PluginParamInnerType.Combo };
+	type: { type: PluginParamInnerType.Combo; arrayDepth: number };
 }
 
 export interface ActorPluginParam extends PluginParam {
-	type: { type: PluginParamInnerType.Actor };
+	type: { type: PluginParamInnerType.Actor; arrayDepth: number };
 }
 
 export interface ClassPluginParam extends PluginParam {
-	type: { type: PluginParamInnerType.Class };
+	type: { type: PluginParamInnerType.Class; arrayDepth: number };
 }
 
 export interface SkillPluginParam extends PluginParam {
-	type: { type: PluginParamInnerType.Skill };
+	type: { type: PluginParamInnerType.Skill; arrayDepth: number };
 }
 
 export interface ItemPluginParam extends PluginParam {
-	type: { type: PluginParamInnerType.Item };
+	type: { type: PluginParamInnerType.Item; arrayDepth: number };
 }
 
 export interface WeaponPluginParam extends PluginParam {
-	type: { type: PluginParamInnerType.Weapon };
+	type: { type: PluginParamInnerType.Weapon; arrayDepth: number };
 }
 
 export interface ArmorPluginParam extends PluginParam {
-	type: { type: PluginParamInnerType.Armor };
+	type: { type: PluginParamInnerType.Armor; arrayDepth: number };
 }
 
 export interface EnemyPluginParam extends PluginParam {
-	type: { type: PluginParamInnerType.Enemy };
+	type: { type: PluginParamInnerType.Enemy; arrayDepth: number };
 }
 
 export interface TroopPluginParam extends PluginParam {
-	type: { type: PluginParamInnerType.Troop };
+	type: { type: PluginParamInnerType.Troop; arrayDepth: number };
 }
 
 export interface StatePluginParam extends PluginParam {
-	type: { type: PluginParamInnerType.State };
+	type: { type: PluginParamInnerType.State; arrayDepth: number };
 }
 
 export interface AnimationPluginParam extends PluginParam {
-	type: { type: PluginParamInnerType.Animation };
+	type: { type: PluginParamInnerType.Animation; arrayDepth: number };
 }
 
 export interface TilesetPluginParam extends PluginParam {
-	type: { type: PluginParamInnerType.Tileset };
+	type: { type: PluginParamInnerType.Tileset; arrayDepth: number };
 }
 
 export interface CommonEventPluginParam extends PluginParam {
-	type: { type: PluginParamInnerType.CommonEvent };
+	type: { type: PluginParamInnerType.CommonEvent; arrayDepth: number };
 }
 
 export interface SwitchPluginParam extends PluginParam {
-	type: { type: PluginParamInnerType.Switch };
+	type: { type: PluginParamInnerType.Switch; arrayDepth: number };
 }
 
 export interface VariablePluginParam extends PluginParam {
-	type: { type: PluginParamInnerType.Variable };
-}
-
-export interface ArrayPluginParam extends PluginParam {
-	type: PluginParamArrayType;
+	type: { type: PluginParamInnerType.Variable; arrayDepth: number };
 }
 
 export interface StructPluginParam extends PluginParam {
