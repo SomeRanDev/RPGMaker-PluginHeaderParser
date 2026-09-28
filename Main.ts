@@ -328,6 +328,7 @@ function parseHeaderBlock(block: string): {
 			};
 			result.commands.push(currentCommand);
 			currentParam = null;
+			currentOption = null;
 			continue;
 		}
 
