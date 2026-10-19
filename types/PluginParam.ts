@@ -43,6 +43,7 @@ export function stringToParamType(name: string): PluginParamType {
 		return {
 			type: PluginParamInnerType.Struct,
 			structName: name.substring("struct<".length, name.length - 1),
+			arrayDepth: 0,
 		} as PluginParamStructType;
 	}
 
